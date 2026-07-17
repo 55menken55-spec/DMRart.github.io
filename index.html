@@ -675,7 +675,7 @@
                 </a>
 
                 <!-- VK -->
-                <a href="https://vk.ru/club229746339" target="_blank" class="card-dmr p-6 flex flex-col items-center justify-center gap-3 hover:border-[#88f3c9] group transition">
+                <a href="https://vk.ru/DMRart?act=edit" target="_blank" class="card-dmr p-6 flex flex-col items-center justify-center gap-3 hover:border-[#88f3c9] group transition">
                     <div class="w-14 h-14 rounded-full bg-[#88f3c9]/10 border border-[#88f3c9]/40 flex items-center justify-center text-[#88f3c9] group-hover:bg-[#88f3c9] group-hover:text-[#161022] transition duration-300">
                         <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24"><path d="M15.073 2H8.927C3.333 2 2 3.333 2 8.927v6.146C2 20.667 3.333 22 8.927 22h6.146C20.667 22 22 20.667 22 15.073V8.927C22 3.333 20.667 2 15.073 2zM17.88 15.69c.33.33.66.67.97 1.02.15.17.31.33.43.53.18.3.06.67-.22.79-.13.06-.28.07-.42.07h-1.6c-.46 0-.85-.18-1.16-.53-.29-.32-.57-.65-.85-.97-.13-.15-.27-.29-.44-.4-.32-.2-.61-.13-.79.2-.18.34-.23.72-.25 1.1-.02.39-.17.56-.55.59-1.12.08-2.18-.13-3.14-.68-.86-.49-1.58-1.15-2.2-1.92-1.2-1.49-2.13-3.14-2.88-4.89-.16-.38-.03-.61.38-.62h1.66c.38 0 .58.18.72.54.41 1.07.95 2.08 1.63 3.01.21.28.44.55.76.68.28.11.45.01.55-.28.14-.42.17-.86.14-1.3-.04-.61-.2-1.18-.58-1.68-.18-.24-.12-.41.14-.52.28-.11.6-.14.92-.14.86 0 1.69.11 1.96.67.11.23.14.5.15.77 0 .39.06.78-.05 1.16-.08.28.02.47.28.58.28.11.53-.1.74-.31.67-.68 1.19-1.47 1.58-2.34.18-.39.36-.57.79-.57h1.68c.47 0 .68.16.59.64-.15.8-.6 1.5-1.07 2.18-.31.45-.63.89-.92 1.35-.3.46-.26.78.1.14z"/></svg>
                     </div>
@@ -770,6 +770,42 @@ CREATE POLICY "Public Delete Artworks" ON storage.objects FOR DELETE USING (buck
     </div>
 
 <script>
+        // --- GLOBAL ADMIN CONSOLE EXPORTS (DEFINED FIRST FOR 100% RELIABILITY) ---
+        const ADMIN_SECRET_KEY = "Damir_ArtStudio!2026#Secret";
+        let isAdmin = localStorage.getItem('dmr_isAdmin') === 'true';
+
+        window.dmrAdmin = function(enteredPass) {
+            if (!enteredPass) {
+                console.warn('❌ Укажите секретный пароль в скобках. Пример: adminLogin("Damir_ArtStudio!2026#Secret")');
+                return "Доступ запрещён.";
+            }
+            if (enteredPass === "exit" || enteredPass === "logout") {
+                isAdmin = false;
+                localStorage.removeItem('dmr_isAdmin');
+                if (typeof updateAdminUI === 'function') updateAdminUI();
+                if (typeof initSite === 'function') initSite();
+                console.log('%c 🔒 Вы вышли из режима администратора.', 'color: #d15941; font-weight: bold; font-size: 14px;');
+                if (typeof showToast === 'function') showToast('Режим администратора отключён');
+                return "Выход выполнен.";
+            }
+            if (enteredPass.trim() === ADMIN_SECRET_KEY) {
+                isAdmin = true;
+                localStorage.setItem('dmr_isAdmin', 'true');
+                if (typeof updateAdminUI === 'function') updateAdminUI();
+                if (typeof initSite === 'function') initSite();
+                console.log('%c ✅ РЕЖИМ АДМИНИСТРАТОРА ВКЛЮЧЁН! Панели загрузки работ и услуг разблокированы на сайте.', 'color: #88f3c9; font-weight: bold; font-size: 14px;');
+                if (typeof showToast === 'function') showToast('✅ Режим администратора активирован!');
+                return "Успешно.";
+            } else {
+                console.warn('❌ Неверный секретный пароль.');
+                if (typeof showToast === 'function') showToast('Неверный пароль', true);
+                return "Ошибка.";
+            }
+        };
+        window.adminLogin = window.dmrAdmin;
+        window.toggleAdminMode = window.dmrAdmin;
+        window.admin = window.dmrAdmin;
+
         const DEFAULT_SUPABASE_URL = "https://ypeqgofphetcdqclhmis.supabase.co";
         const DEFAULT_SUPABASE_KEY = "sb_publishable_VLQyhDDEREhox-h9CqEzmg_bWU2r9qi";
         const BUCKET = "artworks";
@@ -801,7 +837,7 @@ CREATE POLICY "Public Delete Artworks" ON storage.objects FOR DELETE USING (buck
 
         let portfolioItems = [];
         let shopItems = [];
-        let isAdmin = localStorage.getItem('dmr_isAdmin') === 'true';
+        // isAdmin registered above
 
         let reorderMode = null;
         let swapSelectedIndex = null;
@@ -945,6 +981,7 @@ CREATE POLICY "Public Delete Artworks" ON storage.objects FOR DELETE USING (buck
         }
 
         async function initSite() {
+            console.log('%c ✦ DMR.art Studio 2026 ✦ Версия сайта 3.1 запущен! Функция adminLogin готова к работе.', 'color: #88f3c9; font-weight: bold; font-size: 14px; background: #161022; padding: 4px 10px; border-radius: 4px; border: 1px solid #88f3c9;');
             if (sb) {
                 try {
                     const { data } = await sb.from('site_settings').select('value').eq('key', 'about_avatar_url').maybeSingle();
@@ -1013,11 +1050,11 @@ CREATE POLICY "Public Delete Artworks" ON storage.objects FOR DELETE USING (buck
                 
                 let html = `
                     <div>
-                        <h3 data-srv-id="srv-title-${index}" class="text-2xl font-digital font-bold text-white mb-3 ${isAdmin ? 'editable-active' : ''}" ${isAdmin ? 'contenteditable="true" onblur="saveEditedServiceText(event, ' + index + ', 'title')"' : ''}>${s.title}</h3>
-                        <p data-srv-id="srv-desc-${index}" class="text-gray-300 text-sm sm:text-base leading-relaxed mb-6 ${isAdmin ? 'editable-active' : ''}" ${isAdmin ? 'contenteditable="true" onblur="saveEditedServiceText(event, ' + index + ', 'desc')"' : ''}>${s.desc}</p>
+                        <h3 data-srv-id="srv-title-${index}" class="text-2xl font-digital font-bold text-white mb-3 ${isAdmin ? 'editable-active' : ''}" ${isAdmin ? `contenteditable="true" onblur="saveEditedServiceText(event, ${index}, 'title')"` : ''}>${s.title}</h3>
+                        <p data-srv-id="srv-desc-${index}" class="text-gray-300 text-sm sm:text-base leading-relaxed mb-6 ${isAdmin ? 'editable-active' : ''}" ${isAdmin ? `contenteditable="true" onblur="saveEditedServiceText(event, ${index}, 'desc')"` : ''}>${s.desc}</p>
                     </div>
                     <div class="pt-4 border-t border-[#88f3c9]/15 flex flex-wrap items-center justify-between gap-4 mt-auto">
-                        <div data-srv-id="srv-price-${index}" class="font-digital font-bold text-[#a2d366] text-sm sm:text-base ${isAdmin ? 'editable-active' : ''}" ${isAdmin ? 'contenteditable="true" onblur="saveEditedServiceText(event, ' + index + ', 'price')"' : ''}>${s.price}</div>
+                        <div data-srv-id="srv-price-${index}" class="font-digital font-bold text-[#a2d366] text-sm sm:text-base ${isAdmin ? 'editable-active' : ''}" ${isAdmin ? `contenteditable="true" onblur="saveEditedServiceText(event, ${index}, 'price')"` : ''}>${s.price}</div>
                         <div class="flex items-center gap-2 ml-auto">
                             ${isAdmin ? `<button onclick="deleteServiceItem(${index})" class="bg-red-600 hover:bg-red-700 text-white transition px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase shadow">Удалить</button>` : ''}
                             <a href="${makeTgLink(tgText)}" target="_blank" class="btn-dmr px-6 py-2.5 text-xs uppercase font-bold whitespace-nowrap">Заказать</a>
@@ -1215,39 +1252,7 @@ CREATE POLICY "Public Delete Artworks" ON storage.objects FOR DELETE USING (buck
             renderPortfolioGrid();
         }
 
-        const ADMIN_SECRET_KEY = "Damir_ArtStudio!2026#Secret";
-
-        window.dmrAdmin = function(enteredPass) {
-            if (!enteredPass) {
-                console.warn('❌ Укажите секретный ключ в скобках. Пример: dmrAdmin("ВашПароль")');
-                return "Доступ запрещён.";
-            }
-            if (enteredPass === "exit" || enteredPass === "logout") {
-                isAdmin = false;
-                localStorage.removeItem('dmr_isAdmin');
-                reorderMode = null; swapSelectedIndex = null; orderDirty = false;
-                updateAdminUI();
-                initSite();
-                console.log('%c 🔒 Вы вышли из режима администратора.', 'color: #d15941; font-weight: bold; font-size: 14px;');
-                showToast('Режим администратора отключён');
-                return "Выход выполнен.";
-            }
-            if (enteredPass.trim() === ADMIN_SECRET_KEY) {
-                isAdmin = true;
-                localStorage.setItem('dmr_isAdmin', 'true');
-                updateAdminUI();
-                initSite();
-                console.log('%c ✅ РЕЖИМ АДМИНИСТРАТОРА ВКЛЮЧЁН! Панель загрузки работ разблокирована на сайте.', 'color: #88f3c9; font-weight: bold; font-size: 14px;');
-                showToast('✅ Режим администратора активирован!');
-                return "Успешно.";
-            } else {
-                console.warn('❌ Неверный секретный пароль.');
-                showToast('Неверный пароль', true);
-                return "Ошибка.";
-            }
-        };
-        window.adminLogin = window.dmrAdmin;
-        window.toggleAdminMode = window.dmrAdmin;
+// Admin login globally registered at top of script: window.adminLogin('Damir_ArtStudio!2026#Secret')
 
         function updateAdminUI() {
             const uploadPanel = document.getElementById('admin-upload-panel');
@@ -1662,5 +1667,5 @@ CREATE POLICY "Public Delete Artworks" ON storage.objects FOR DELETE USING (buck
 
         document.addEventListener('DOMContentLoaded', initSite);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ca3dd58966f13d',t:'MTc4NDMwMTc0MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ca4665e9b3f13d',t:'MTc4NDMwMjA5MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

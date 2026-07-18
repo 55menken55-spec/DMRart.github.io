@@ -58,6 +58,12 @@
             background-position: 0 0, 0 0, 0 0;
             background-attachment: fixed;
         }
+        @media (max-width: 768px) {
+            /* На телефонах fixed-фон часто дает большой пустой отступ / дергает вьюпорт */
+            body { background-attachment: scroll; }
+            /* Дополнительно убираем возможный отступ от плавающего навбара */
+            #hero { padding-top: 88px !important; }
+        }
 
         nav, #mobile-menu, section, footer, #lightbox, #sb-toast {
             position: relative;
@@ -365,7 +371,7 @@
 <body class="theme-dmr">
 
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 p-6 flex justify-between items-center bg-[#161022]/85 backdrop-blur-md border-b border-[#88f3c9]/20">
+    <nav class="fixed top-0 w-full z-50 p-4 md:p-6 flex justify-between items-center bg-[#161022]/85 backdrop-blur-md border-b border-[#88f3c9]/20">
         <a href="#hero" class="font-digital text-2xl md:text-3xl font-bold tracking-wider text-[#88f3c9] flex items-center gap-2 hover:opacity-90 transition">
             DMR<span class="text-[#d15941] font-black">.</span>art
             <span id="admin-indicator" class="hidden admin-badge ml-2">РЕЖИМ АДМИНА</span>
@@ -389,7 +395,7 @@
     </nav>
 
     <!-- Mobile menu -->
-    <div id="mobile-menu" class="fixed top-[81px] left-0 w-full z-40 bg-[#161022]/95 backdrop-blur-md border-b-2 border-[#88f3c9]/60 shadow-xl -translate-y-4 opacity-0 pointer-events-none transition-all duration-300 md:hidden">
+    <div id="mobile-menu" class="fixed top-[68px] md:top-[81px] left-0 w-full z-40 bg-[#161022]/95 backdrop-blur-md border-b-2 border-[#88f3c9]/60 shadow-xl -translate-y-4 opacity-0 pointer-events-none transition-all duration-300 md:hidden">
         <div class="max-w-6xl mx-auto px-6 py-6 flex flex-col items-center justify-center gap-4">
             <a href="#about" class="menu-link text-lg font-bold uppercase tracking-wider text-white hover:text-[#88f3c9] transition">Обо мне</a>
             <a href="#portfolio" class="menu-link text-lg font-bold uppercase tracking-wider text-white hover:text-[#88f3c9] transition">Портфолио</a>
@@ -400,7 +406,7 @@
     </div>
 
     <!-- Hero Section -->
-    <section id="hero" class="pt-36 pb-16 px-6 text-center relative overflow-hidden">
+    <section id="hero" class="pt-24 md:pt-36 pb-12 md:pb-16 px-6 text-center relative overflow-hidden">
         <div class="max-w-4xl mx-auto relative z-10">
             <div class="inline-block bg-[#88f3c9]/10 border border-[#88f3c9]/40 text-[#88f3c9] px-4 py-1.5 rounded-full text-xs md:text-sm font-digital uppercase tracking-widest mb-6">
                 ✦ 2D DIGITAL ARTIST & CHARACTER DESIGNER ✦

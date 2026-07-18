@@ -97,6 +97,10 @@
             border-color: var(--dmr-lime);
             box-shadow: 0 12px 28px rgba(136, 243, 201, 0.25);
         }
+        /* Fix: гарантия соотношения сторон и видимости картинок в портфолио */
+        .aspect-square { aspect-ratio: 1 / 1; }
+        #port-grid .card-dmr { min-height: 220px; }
+        #port-grid .card-dmr img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
         .btn-dmr {
             background-color: var(--dmr-terracotta);
@@ -1164,7 +1168,7 @@ CREATE POLICY "Public Delete Artworks" ON storage.objects FOR DELETE USING (buck
             const loadingStrategy = isFirstScreen ? 'eager' : 'lazy';
             const imgSrc = item.img || item.image_url || '';
             let html = `
-                <img src="${imgSrc}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-108" loading="${loadingStrategy}" alt="${item.category} - Арт Дамира" draggable="false">
+                <img src="${imgSrc}" class="w-full h-full object-cover block transition-transform duration-500 group-hover:scale-105" loading="${loadingStrategy}" alt="${item.category} - Арт Дамира" draggable="false" onerror="this.style.display='none'">
                 <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end pointer-events-none">
                     <span class="text-[10px] font-digital text-[#88f3c9] uppercase tracking-widest">${item.category}</span>
                     <span class="text-sm font-bold text-white tracking-wide">${item.title || 'Иллюстрация'}</span>
@@ -1182,6 +1186,8 @@ CREATE POLICY "Public Delete Artworks" ON storage.objects FOR DELETE USING (buck
                     </div>
                 `;
             }
+
+            div.innerHTML = html;
 
             div.addEventListener('click', (e) => {
                 if(isAdmin && (reorderMode === 'swap' || e.target.closest('button'))) return;
